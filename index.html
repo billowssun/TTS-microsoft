@@ -103,10 +103,6 @@
             textarea {
                 min-height: 100px;
             }
-
-            .toggle-password {
-                top: 60%;
-            }
         }
 
         @media (max-width: 480px) {
@@ -239,11 +235,11 @@
             font-size: 0.9rem;
         }
 
-        /* 添加密码切换按钮样式 */
+        /* 调整密码切换按钮样式 */
         .toggle-password {
             position: absolute;
             right: 12px;
-            top: 50%;
+            top: calc(50% + 14px);
             transform: translateY(-50%);
             background: none;
             border: none;
@@ -254,7 +250,10 @@
             color: var(--text-color);
             opacity: 0.6;
             transition: opacity 0.3s ease;
-            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
         }
 
         .toggle-password:hover {
@@ -262,8 +261,8 @@
         }
 
         .toggle-password svg {
-            width: 100%;
-            height: 100%;
+            width: 18px;
+            height: 18px;
         }
 
         /* 调整密码输入框右侧内边距，为图标留出空间 */
