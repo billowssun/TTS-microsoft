@@ -1,5 +1,25 @@
 let audioData = null;
 
+// 密码可见性切换功能
+function setupPasswordToggle() {
+    const toggleButton = document.querySelector('.toggle-password');
+    const apiKeyInput = document.getElementById('apiKey');
+    const eyeIcon = document.querySelector('.eye-icon');
+    const eyeOffIcon = document.querySelector('.eye-off-icon');
+
+    if (toggleButton && apiKeyInput) {
+        toggleButton.addEventListener('click', function() {
+            // 切换密码可见性
+            const type = apiKeyInput.type === 'password' ? 'text' : 'password';
+            apiKeyInput.type = type;
+
+            // 切换图标
+            eyeIcon.style.display = type === 'password' ? 'block' : 'none';
+            eyeOffIcon.style.display = type === 'password' ? 'none' : 'block';
+        });
+    }
+}
+
 async function synthesizeSpeech() {
     console.log('synthesizeSpeech function called');
     const apiKey = document.getElementById('apiKey').value;
@@ -58,7 +78,7 @@ async function synthesizeSpeech() {
             // 显示下载按钮
             document.getElementById('downloadButton').style.display = 'block';
             
-            // 当音��播放完毕时释放 URL
+            // 当音频播放完毕时释放 URL
             audioPlayer.onended = () => {
                 URL.revokeObjectURL(url);
             };
@@ -109,6 +129,9 @@ function downloadAudio() {
 // 等待页面加载完成
 document.addEventListener('DOMContentLoaded', () => {
     console.log('正在初始化语音合成系统...');
+    
+    // 初始化密码切换功能
+    setupPasswordToggle();
     
     // 绑定合成按钮事件
     const synthesizeButton = document.getElementById('synthesizeButton');
