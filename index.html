@@ -516,7 +516,7 @@
         }
 
         #historyPanel.collapsed {
-            transform: translateX(370px);
+            transform: translateX(380px);
         }
 
         .history-toggle {
@@ -537,6 +537,83 @@
             color: var(--text-color);
             transition: all 0.3s ease;
             padding: 0;
+            z-index: 1001;
+        }
+
+        @media (max-width: 768px) {
+            #historyPanel {
+                width: 100%;
+            }
+
+            #historyPanel.collapsed {
+                transform: translateX(100%);
+            }
+
+            .history-toggle {
+                position: fixed;
+                right: 20px;
+                bottom: 20px;
+                top: auto;
+                left: auto;
+                transform: none;
+                width: 56px;
+                height: 56px;
+                border-radius: 50%;
+                background-color: var(--primary-color);
+                color: white;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 1001;
+            }
+
+            .history-toggle:hover {
+                background-color: var(--primary-dark);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            }
+
+            .history-toggle svg {
+                width: 24px;
+                height: 24px;
+                transition: transform 0.3s ease;
+                transform: rotate(90deg);
+            }
+
+            #historyPanel.collapsed .history-toggle {
+                right: 20px;
+                transform: none;
+            }
+
+            #historyPanel.collapsed .history-toggle svg {
+                transform: rotate(-90deg);
+            }
+
+            /* 移动端覆盖默认的悬停效果 */
+            .history-toggle:hover {
+                background-color: var(--primary-dark);
+            }
+        }
+
+        /* 移动端以外的设备保持原样式 */
+        @media (min-width: 769px) {
+            .history-toggle {
+                position: absolute;
+                left: -32px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: var(--card-background);
+                width: 32px;
+                height: 80px;
+                border-radius: 8px 0 0 8px;
+            }
+
+            .history-toggle:hover {
+                background: var(--primary-color);
+                color: white;
+            }
+
+            #historyPanel.collapsed .history-toggle svg {
+                transform: rotate(180deg);
+            }
         }
 
         .history-toggle:hover {
@@ -736,6 +813,84 @@
             border-radius: 1.5px;
             display: inline-block;
         }
+
+        /* 移动端历史记录按钮样式 */
+        .mobile-history-toggle {
+            display: none;
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            z-index: 9999;
+            padding: 0;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+
+        .mobile-history-toggle:active {
+            transform: scale(0.95);
+            background-color: var(--primary-dark);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .mobile-history-toggle:focus {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 2px rgba(255, 255, 255, 0.5);
+            outline: none;
+        }
+
+        /* 移动端显示按钮 */
+        @media (max-width: 768px) {
+            .mobile-history-toggle {
+                display: flex !important;
+            }
+
+            .history-toggle {
+                display: none;
+            }
+        }
+
+        .mobile-history-toggle svg {
+            width: 24px;
+            height: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        #historyPanel.collapsed ~ .mobile-history-toggle svg {
+            transform: scaleX(-1);
+        }
+
+        /* 移动端显示按钮 */
+        @media (max-width: 768px) {
+            .mobile-history-toggle {
+                display: flex !important;
+            }
+
+            .history-toggle {
+                display: none;
+            }
+        }
+
+        .mobile-history-toggle:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .mobile-history-toggle:active {
+            transform: scale(0.95);
+            background-color: var(--primary-dark);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -822,6 +977,13 @@
         <button id="downloadButton">保存音频</button>
     </div>
     
+    <!-- 移动端历史记录按钮 -->
+    <button id="mobileHistoryToggle" class="mobile-history-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 6l6 6-6 6"/>
+        </svg>
+    </button>
+
     <!-- 历史记录侧边栏 -->
     <div id="historyPanel">
         <button class="history-toggle" title="展开/收起历史记录">
@@ -838,5 +1000,17 @@
     </div>
     
     <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const historyPanel = document.getElementById('historyPanel');
+            const mobileHistoryToggle = document.getElementById('mobileHistoryToggle');
+            
+            if (mobileHistoryToggle) {
+                mobileHistoryToggle.addEventListener('click', () => {
+                    historyPanel.classList.toggle('collapsed');
+                });
+            }
+        });
+    </script>
 </body>
 </html>
