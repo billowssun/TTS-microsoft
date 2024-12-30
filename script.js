@@ -153,12 +153,13 @@ document.addEventListener('DOMContentLoaded', () => {
         eyeOffIcon.style.display = type === 'password' ? 'none' : 'block';
     });
 
-    // 防止用户修改默认值
+    // 处理API密钥输入
     apiKeyInput.addEventListener('input', function(e) {
-        if (this.value.length === 0) {
-            this.value = createAsterisks(32);
-        } else if (this.value !== createAsterisks(32)) {
+        // 直接更新API密钥
+        if (this.value.length > 0) {
             this.dataset.apiKey = btoa(this.value);
+        } else {
+            this.dataset.apiKey = '';
         }
     });
 
