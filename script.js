@@ -1,162 +1,177 @@
 (function() {
-    // ---- CI 注入配置（部署时由 GitHub Actions 替换，勿手动修改） ----
     var INJECTED_KEY = '__SPEECH_KEY__';
     var INJECTED_REGION = '__SPEECH_REGION__';
 
-    var STORAGE_KEY = 'azureTtsConfig';
+    var VOICES = [
+        { g: 'Dragon HD Omni · 最新旗舰 (自然流畅)', v: [
+            ['zh-CN-Yunqi:DragonHDOmniLatestNeural', '云奇 · 自然男声'],
+            ['zh-CN-Xiaoyue:DragonHDOmniLatestNeural', '晓月 · 自然女声']
+        ]},
+        { g: 'Dragon HD / Flash · 极速高保真', v: [
+            ['zh-CN-Xiaoxiao:DragonHDFlashLatestNeural', '晓晓 Flash · 智能女声'],
+            ['zh-CN-Xiaoxiao2:DragonHDFlashLatestNeural', '晓晓2 Flash · 情感女声'],
+            ['zh-CN-Yunfan:DragonHDLatestNeural', '云帆 HD · 清爽男声'],
+            ['zh-CN-Xiaochen:DragonHDLatestNeural', '晓晨 HD · 标准女声'],
+            ['zh-CN-Xiaochen:DragonHDFlashLatestNeural', '晓晨 Flash · 亲切女声'],
+            ['zh-CN-Xiaohan:DragonHDFlashLatestNeural', '晓涵 Flash · 温暖女声'],
+            ['zh-CN-Xiaoyi:DragonHDFlashLatestNeural', '晓伊 Flash · 温柔女声'],
+            ['zh-CN-Xiaoyou:DragonHDFlashLatestNeural', '晓游 Flash · 活泼女声'],
+            ['zh-CN-Xiaoyu:DragonHDFlashLatestNeural', '晓语 Flash · 甜美女声'],
+            ['zh-CN-Xiaoshuang:DragonHDFlashLatestNeural', '晓爽 Flash · 清晰女声'],
+            ['zh-CN-Yunxiao:DragonHDFlashLatestNeural', '云晓 Flash · 年轻男声'],
+            ['zh-CN-Yunyi:DragonHDFlashLatestNeural', '云逸 Flash · 成熟男声'],
+            ['zh-CN-Yunxia:DragonHDFlashLatestNeural', '云霞 Flash · 儒雅男声'],
+            ['zh-CN-Yunye:DragonHDFlashLatestNeural', '云野 Flash · 沉稳男声'],
+            ['zh-CN-Yunxi:DragonHDFlashLatestNeural', '云希 Flash · 阳光男声'],
+            ['zh-CN-Yunhan:DragonHDFlashLatestNeural', '云汉 Flash · 醇厚男声']
+        ]},
+        { g: '标准 Neural 女声', v: [
+            ['zh-CN-XiaoxiaoNeural', '晓晓 · 温暖女声'],
+            ['zh-CN-XiaoyiNeural', '晓伊 · 温柔女声'],
+            ['zh-CN-XiaochenNeural', '晓辰 · 标准女声'],
+            ['zh-CN-XiaohanNeural', '晓涵 · 活泼女声'],
+            ['zh-CN-XiaomengNeural', '晓梦 · 甜美女声'],
+            ['zh-CN-XiaomoNeural', '晓墨 · 清新女声'],
+            ['zh-CN-XiaoqiuNeural', '晓秋 · 成熟女声'],
+            ['zh-CN-XiaorouNeural', '晓柔 · 温婉女声'],
+            ['zh-CN-XiaoruiNeural', '晓睿 · 干练女声'],
+            ['zh-CN-XiaoshuangNeural', '晓双 · 可爱童声'],
+            ['zh-CN-XiaoyanNeural', '晓燕 · 亲切女声'],
+            ['zh-CN-XiaozhenNeural', '晓珍 · 柔和女声']
+        ]},
+        { g: '标准 Neural 男声', v: [
+            ['zh-CN-YunxiNeural', '云希 · 年轻男声'],
+            ['zh-CN-YunyangNeural', '云扬 · 成熟男声'],
+            ['zh-CN-YunfengNeural', '云枫 · 儒雅男声'],
+            ['zh-CN-YunzeNeural', '云泽 · 温和男声'],
+            ['zh-CN-YunjianNeural', '云剑 · 铿锵男声'],
+            ['zh-CN-YunhaoNeural', '云浩 · 浑厚男声'],
+            ['zh-CN-YunjieNeural', '云捷 · 爽朗男声'],
+            ['zh-CN-YunxiaNeural', '云夏 · 亲和男声'],
+            ['zh-CN-YunyeNeural', '云野 · 沉稳男声']
+        ]},
+        { g: '多语言 Neural (中英日韩混合)', v: [
+            ['zh-CN-XiaoxiaoMultilingualNeural', '晓晓 Multilingual'],
+            ['zh-CN-XiaoyuMultilingualNeural', '晓宇 Multilingual'],
+            ['zh-CN-XiaochenMultilingualNeural', '晓晨 Multilingual'],
+            ['zh-CN-XiaoshuangMultilingualNeural', '晓爽 Multilingual'],
+            ['zh-CN-XiaoyouMultilingualNeural', '晓游 Multilingual'],
+            ['zh-CN-YunfanMultilingualNeural', '云帆 Multilingual'],
+            ['zh-CN-YunxiaoMultilingualNeural', '云晓 Multilingual'],
+            ['zh-CN-YunyiMultilingualNeural', '云逸 Multilingual']
+        ]},
+        { g: '方言 Neural (地方口音)', v: [
+            ['zh-CN-liaoning-XiaobeiNeural', '晓北 · 东北口音女声'],
+            ['zh-CN-liaoning-YunbiaoNeural', '云飙 · 东北口音男声'],
+            ['zh-CN-shaanxi-XiaoniNeural', '晓妮 · 陕西口音女声'],
+            ['zh-CN-sichuan-YunxiNeural', '云玺 · 四川口音男声'],
+            ['zh-CN-shandong-YunxiangNeural', '云翔 · 山东口音男声'],
+            ['zh-CN-XiaoxiaoDialectsNeural', '晓晓 · 方言混合女声']
+        ]},
+        { g: '粤语 / 吴语 / 台湾国语', v: [
+            ['zh-HK-HiuMaanNeural', '晓曼 · 粤语女声'],
+            ['zh-HK-WanLungNeural', '云龙 · 粤语男声'],
+            ['zh-HK-HiuGaaiNeural', '晓佳 · 粤语女声'],
+            ['yue-CN-XiaoMinNeural', '晓敏 · 粤语简体女声'],
+            ['yue-CN-YunSongNeural', '云松 · 粤语简体男声'],
+            ['wuu-CN-XiaotongNeural', '晓桐 · 吴语女声'],
+            ['wuu-CN-YunzheNeural', '云哲 · 吴语男声'],
+            ['zh-TW-HsiaoChenNeural', '晓晨 · 台湾国语女声'],
+            ['zh-TW-YunJheNeural', '云哲 · 台湾国语男声'],
+            ['zh-TW-HsiaoYuNeural', '晓宇 · 台湾国语女声']
+        ]}
+    ];
 
     function isPlaceholder(val) {
         return !val || val.indexOf('__SPEECH_') === 0;
     }
 
-    function loadSavedConfig() {
-        try {
-            var raw = localStorage.getItem(STORAGE_KEY);
-            if (raw) {
-                var parsed = JSON.parse(raw);
-                if (parsed.key && parsed.region) {
-                    return parsed;
-                }
-            }
-        } catch (e) {
-            // ignore
-        }
-        return null;
-    }
-
-    function persistConfig(key, region) {
-        if (key && region) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                key: btoa(key),
-                region: region
-            }));
-        }
-    }
-
-    function createAsterisks(length) {
-        return '*'.repeat(length);
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
+        // 加载 SDK
         var sdkScript = document.createElement('script');
         sdkScript.src = 'https://cdn.jsdelivr.net/npm/microsoft-cognitiveservices-speech-sdk@latest/distrib/browser/microsoft.cognitiveservices.speech.sdk.bundle-min.js';
         sdkScript.onerror = function() {
-            var el = document.querySelector('.progress-text');
-            if (el) {
-                el.textContent = 'Speech SDK 加载失败，请检查网络连接后刷新页面';
-                el.style.color = '#ef4444';
-            }
-            var pi = document.getElementById('progressIndicator');
-            if (pi) pi.style.display = 'block';
+            alert('Speech SDK 加载失败，请检查网络后刷新页面');
         };
         document.head.appendChild(sdkScript);
 
-        var apiKeyInput = document.getElementById('apiKey');
-        var regionInput = document.getElementById('region');
-        var synthesizeButton = document.getElementById('synthesizeButton');
-        var downloadButton = document.getElementById('downloadButton');
-        var audioPlayer = document.getElementById('audioPlayer');
-        var audioPlayerContainer = document.getElementById('audioPlayerContainer');
-        var progressIndicator = document.getElementById('progressIndicator');
-        var textInput = document.getElementById('text');
+        // 构建音色下拉
         var voiceSelect = document.getElementById('voiceName');
+        var frag = document.createDocumentFragment();
+        VOICES.forEach(function(group) {
+            var og = document.createElement('optgroup');
+            og.label = group.g;
+            group.v.forEach(function(v) {
+                var opt = document.createElement('option');
+                opt.value = v[0];
+                opt.textContent = v[1];
+                og.appendChild(opt);
+            });
+            frag.appendChild(og);
+        });
+        voiceSelect.appendChild(frag);
+        voiceSelect.value = 'zh-CN-Xiaoxiao:DragonHDFlashLatestNeural';
+
+        // DOM refs
+        var synthesizeBtn = document.getElementById('synthesizeButton');
+        var btnText = document.getElementById('btnText');
+        var btnSpinner = document.getElementById('btnSpinner');
+        var downloadBtn = document.getElementById('downloadButton');
+        var audioPlayer = document.getElementById('audioPlayer');
+        var outputCard = document.getElementById('outputCard');
+        var textInput = document.getElementById('text');
+        var charCount = document.getElementById('charCount');
 
         var audioData = null;
-        var currentAudioPlayer = audioPlayer;
-        var hasInjectedConfig = false;
-        var progressHandler = null;
 
-        // 优先使用 CI 注入的配置
-        if (!isPlaceholder(INJECTED_KEY) && !isPlaceholder(INJECTED_REGION)) {
-            apiKeyInput.value = createAsterisks(32);
-            apiKeyInput.dataset.apiKey = btoa(INJECTED_KEY);
-            regionInput.value = INJECTED_REGION;
-            hasInjectedConfig = true;
-            var settingsSection = document.getElementById('settingsSection');
-            if (settingsSection) settingsSection.style.display = 'none';
-        } else {
-            // 回退到 localStorage 中保存的配置
-            var savedConfig = loadSavedConfig();
-            if (savedConfig) {
-                apiKeyInput.value = createAsterisks(32);
-                apiKeyInput.dataset.apiKey = savedConfig.key;
-                regionInput.value = savedConfig.region;
-            } else {
-                // 本地开发无密钥时，自动展开 API 配置区
-                var settingsSection = document.getElementById('settingsSection');
-                if (settingsSection) {
-                    settingsSection.classList.remove('collapsed');
-                    settingsSection.classList.add('expanded');
-                }
-            }
-        }
+        // 启用按钮
+        synthesizeBtn.disabled = false;
 
-        var togglePassword = document.querySelector('.toggle-password');
-        var eyeIcon = document.querySelector('.eye-icon');
-        var eyeOffIcon = document.querySelector('.eye-off-icon');
-
-        togglePassword.addEventListener('click', function() {
-            var type = apiKeyInput.type === 'password' ? 'text' : 'password';
-            apiKeyInput.type = type;
-            eyeIcon.style.display = type === 'password' ? 'block' : 'none';
-            eyeOffIcon.style.display = type === 'password' ? 'none' : 'block';
+        // 字符计数
+        textInput.addEventListener('input', function() {
+            var len = this.value.length;
+            charCount.textContent = len + ' 字';
+            charCount.className = len > 10000 ? 'char-count over' : 'char-count';
         });
 
-        apiKeyInput.addEventListener('input', function() {
-            if (this.value.length > 0) {
-                this.dataset.apiKey = btoa(this.value);
-                if (!hasInjectedConfig) {
-                    persistConfig(this.value, regionInput.value.trim());
-                }
-            } else {
-                this.dataset.apiKey = '';
-            }
-        });
-
-        regionInput.addEventListener('input', function() {
-            if (apiKeyInput.value && apiKeyInput.dataset.apiKey && !hasInjectedConfig) {
-                persistConfig(apiKeyInput.value, this.value.trim());
-            }
-        });
-
-        synthesizeButton.addEventListener('click', function() {
+        // 合成
+        synthesizeBtn.addEventListener('click', function() {
             if (!window.SpeechSDK) {
-                alert('Speech SDK 尚未加载，请稍后重试或检查网络连接');
+                alert('Speech SDK 尚未就绪，请稍后');
                 return;
             }
 
-            var apiKey = apiKeyInput.dataset.apiKey ? atob(apiKeyInput.dataset.apiKey) : '';
-            var region = regionInput.value.trim();
             var text = textInput.value.trim();
-            var voice = voiceSelect.value;
-
-            if (!apiKey) {
-                alert('请先在 API 配置中输入 Azure 语音服务 API 密钥');
-                return;
-            }
-            if (!region) {
-                alert('请先在 API 配置中输入 Azure 服务区域');
-                return;
-            }
             if (!text) {
-                alert('请输入要转换的文本内容');
+                alert('请输入文本内容');
+                return;
+            }
+            if (text.length > 10000) {
+                alert('文本过长，请控制在 10000 字以内');
                 return;
             }
 
-            if (currentAudioPlayer && !currentAudioPlayer.paused) {
-                currentAudioPlayer.pause();
-                currentAudioPlayer.currentTime = 0;
+            if (isPlaceholder(INJECTED_KEY) || isPlaceholder(INJECTED_REGION)) {
+                alert('未配置 API 密钥。请通过 Vercel 环境变量 SPEECH_KEY / SPEECH_REGION 部署。');
+                return;
             }
 
-            synthesizeButton.disabled = true;
-            downloadButton.style.display = 'none';
-            audioPlayerContainer.style.display = 'none';
-            progressIndicator.style.display = 'block';
+            // 停止当前播放
+            if (!audioPlayer.paused) {
+                audioPlayer.pause();
+                audioPlayer.currentTime = 0;
+            }
 
-            var speechConfig = SpeechSDK.SpeechConfig.fromSubscription(apiKey, region);
-            speechConfig.speechSynthesisVoiceName = voice;
+            // 加载态
+            synthesizeBtn.disabled = true;
+            btnText.textContent = '合成中...';
+            btnSpinner.style.display = 'block';
+            outputCard.style.display = 'none';
 
-            var synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
+            var speechConfig = SpeechSDK.SpeechConfig.fromSubscription(INJECTED_KEY, INJECTED_REGION);
+            speechConfig.speechSynthesisVoiceName = voiceSelect.value;
+
+            var synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig, null);
 
             synthesizer.speakTextAsync(
                 text,
@@ -168,67 +183,32 @@
                     var url = URL.createObjectURL(blob);
 
                     audioPlayer.src = url;
-                    audioPlayerContainer.style.display = 'block';
-                    downloadButton.style.display = 'block';
+                    outputCard.style.display = 'block';
 
-                    audioPlayer.onplay = null;
-                    audioPlayer.onended = null;
-
-                    if (progressHandler) {
-                        audioPlayer.removeEventListener('play', progressHandler);
-                    }
-
-                    var playAudio = function() {
-                        audioPlayer.play().catch(function(err) {
-                            console.warn('自动播放被阻止:', err);
-                        });
-                        audioPlayer.removeEventListener('canplay', playAudio);
-                    };
-
-                    audioPlayer.addEventListener('canplay', playAudio, { once: true });
-                    audioPlayer.load();
-
-                    progressHandler = function() {
-                        var updateProgress = function() {
-                            if (!audioPlayer.paused && audioPlayer.duration) {
-                                var progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-                                var progressBar = document.querySelector('.progress-bar-value');
-                                if (progressBar) {
-                                    progressBar.style.transform = 'translateX(' + (progress - 100) + '%)';
-                                }
-                                requestAnimationFrame(updateProgress);
-                            }
-                        };
-                        updateProgress();
-                    };
-                    audioPlayer.addEventListener('play', progressHandler);
-
-                    audioPlayer.onended = function() {
-                        URL.revokeObjectURL(url);
-                    };
-
-                    synthesizeButton.disabled = false;
-                    progressIndicator.style.display = 'none';
+                    synthesizeBtn.disabled = false;
+                    btnText.textContent = '生成音频';
+                    btnSpinner.style.display = 'none';
                 },
                 function(error) {
                     synthesizer.close();
-                    console.error('语音合成失败:', error);
+                    console.error('合成失败:', error);
                     alert('语音合成失败: ' + (error.message || error));
-                    synthesizeButton.disabled = false;
-                    progressIndicator.style.display = 'none';
+                    synthesizeBtn.disabled = false;
+                    btnText.textContent = '生成音频';
+                    btnSpinner.style.display = 'none';
                 }
             );
         });
 
-        downloadButton.addEventListener('click', function() {
+        // 下载
+        downloadBtn.addEventListener('click', function() {
             if (!audioData) return;
 
             var blob = new Blob([audioData], { type: 'audio/wav' });
             var url = URL.createObjectURL(blob);
             var a = document.createElement('a');
-            a.style.display = 'none';
             a.href = url;
-            a.download = (textInput.value.slice(0, 10) || '语音合成') + '.wav';
+            a.download = (textInput.value.trim().slice(0, 10) || '语音合成') + '.wav';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
