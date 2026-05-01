@@ -295,10 +295,6 @@ audio::-webkit-media-controls-panel {
     background: var(--c-bg);
 }
 
-audio::-webkit-media-controls-play-button {
-    background: var(--c-primary);
-    border-radius: 50%;
-}
 
 /* Download button */
 .action-row {
