@@ -217,16 +217,10 @@
         document.addEventListener('DOMContentLoaded', () => {
             const settingsSection = document.getElementById('settingsSection');
             const settingsHeader = settingsSection.querySelector('.settings-header');
-            
-            // 设置区域展开/折叠
             settingsHeader.addEventListener('click', () => {
                 settingsSection.classList.toggle('expanded');
                 settingsSection.classList.toggle('collapsed');
             });
-            
-            // 确保默认为折叠状态
-            settingsSection.classList.add('collapsed');
-            settingsSection.classList.remove('expanded');
         });
     </script>
 </body>

@@ -71,6 +71,8 @@
             apiKeyInput.dataset.apiKey = btoa(INJECTED_KEY);
             regionInput.value = INJECTED_REGION;
             hasInjectedConfig = true;
+            var settingsSection = document.getElementById('settingsSection');
+            if (settingsSection) settingsSection.style.display = 'none';
         } else {
             // 回退到 localStorage 中保存的配置
             var savedConfig = loadSavedConfig();
@@ -78,6 +80,13 @@
                 apiKeyInput.value = createAsterisks(32);
                 apiKeyInput.dataset.apiKey = savedConfig.key;
                 regionInput.value = savedConfig.region;
+            } else {
+                // 本地开发无密钥时，自动展开 API 配置区
+                var settingsSection = document.getElementById('settingsSection');
+                if (settingsSection) {
+                    settingsSection.classList.remove('collapsed');
+                    settingsSection.classList.add('expanded');
+                }
             }
         }
 
