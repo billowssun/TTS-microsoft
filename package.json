@@ -1,0 +1,7 @@
+{
+    "name": "tts-microsoft",
+    "private": true,
+    "scripts": {
+        "build": "node build.js"
+    }
+}

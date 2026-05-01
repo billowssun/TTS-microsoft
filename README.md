@@ -4,28 +4,30 @@
 
 ## 功能
 
-- 文本转语音合成（Azure Neural TTS）
+- 文本转语音合成（Azure Neural TTS / Dragon HD Flash）
 - 丰富的音色选择（Dragon HD Flash、标准 Neural、多语言、方言等）
 - 音频在线播放与 WAV 下载
-- API 密钥本地持久化存储
+- API 密钥本地持久化 / CI 环境变量注入
 
-## 使用方式
+## 部署到 Vercel
 
-1. 打开 `index.html`（或部署到任意静态服务器）
-2. 展开 **API 配置**，输入 Azure 语音服务的 API 密钥和区域
-3. 输入文本，选择音色，点击 **生成音频**
+1. Fork 本仓库
+2. 在 Vercel 中导入项目，自动识别 `vercel.json` 配置
+3. 在 Vercel 项目 **Settings → Environment Variables** 中添加：
+   - `SPEECH_KEY` = Azure 语音服务 API 密钥
+   - `SPEECH_REGION` = `southeastasia`（推荐，支持 Dragon HD Flash + 预览版音色）
+4. 部署后用户无需填写密钥，打开即用
 
-## 获取 API 密钥
+## 本地使用
 
-前往 [Azure 门户](https://portal.azure.com/) 创建语音服务资源，获取密钥和区域。
+直接打开 `index.html`，展开 API 配置手动填入密钥和区域。密钥会自动保存到浏览器 localStorage。
 
-## 部署
+## Azure 服务配置建议
 
-本项目为纯静态页面，可直接部署到：
-
-- GitHub Pages
-- Vercel / Netlify
-- 任意静态文件服务器
+| 项目 | 推荐值 |
+|------|--------|
+| 区域 | `southeastasia` |
+| 定价层 | Free F0（每月 50 万字符免费） |
 
 ## 技术栈
 
