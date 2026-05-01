@@ -64,6 +64,7 @@
         var audioData = null;
         var currentAudioPlayer = audioPlayer;
         var hasInjectedConfig = false;
+        var progressHandler = null;
 
         // 优先使用 CI 注入的配置
         if (!isPlaceholder(INJECTED_KEY) && !isPlaceholder(INJECTED_REGION)) {
@@ -155,14 +156,7 @@
             var speechConfig = SpeechSDK.SpeechConfig.fromSubscription(apiKey, region);
             speechConfig.speechSynthesisVoiceName = voice;
 
-            var audioConfig = SpeechSDK.AudioConfig.fromDefaultSpeakerOutput();
-            var synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig, audioConfig);
-
-            if (window.audioContext) {
-                window.audioContext.suspend();
-            }
-            window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            window.audioContext.suspend();
+            var synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
 
             synthesizer.speakTextAsync(
                 text,
@@ -180,6 +174,10 @@
                     audioPlayer.onplay = null;
                     audioPlayer.onended = null;
 
+                    if (progressHandler) {
+                        audioPlayer.removeEventListener('play', progressHandler);
+                    }
+
                     var playAudio = function() {
                         audioPlayer.play().catch(function(err) {
                             console.warn('自动播放被阻止:', err);
@@ -190,7 +188,7 @@
                     audioPlayer.addEventListener('canplay', playAudio, { once: true });
                     audioPlayer.load();
 
-                    audioPlayer.addEventListener('play', function() {
+                    progressHandler = function() {
                         var updateProgress = function() {
                             if (!audioPlayer.paused && audioPlayer.duration) {
                                 var progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
@@ -202,7 +200,8 @@
                             }
                         };
                         updateProgress();
-                    });
+                    };
+                    audioPlayer.addEventListener('play', progressHandler);
 
                     audioPlayer.onended = function() {
                         URL.revokeObjectURL(url);
