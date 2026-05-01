@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- 基本元信息 -->
+    <title>微软语音合成 - Azure TTS</title>
+    <meta name="description" content="使用微软 Azure 认知服务进行高质量的文本转语音合成，支持多种中文音色和实验性声音。">
+    <meta name="keywords" content="微软,Azure,语音合成,TTS,文本转语音,Azure认知服务,Neural TTS">
+    <meta name="author" content="Azure Speech Service">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="https://www.microsoft.com/favicon.ico">
+    <link rel="apple-touch-icon" href="https://www.microsoft.com/favicon.ico">
+    <link rel="shortcut icon" href="https://www.microsoft.com/favicon.ico">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
+    <meta property="og:title" content="微软语音合成 - Azure TTS">
+    <meta property="og:description" content="使用微软 Azure 认知服务进行高质量的文本转语音合成，支持多种中文音色和实验性声音。">
+    <meta property="og:image" content="https://www.microsoft.com/favicon.ico">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="">
+    <meta name="twitter:title" content="微软语音合成 - Azure TTS">
+    <meta name="twitter:description" content="使用微软 Azure 认知服务进行高质量的文本转语音合成，支持多种中文音色和实验性声音。">
+    <meta name="twitter:image" content="https://www.microsoft.com/favicon.ico">
+    
+    <!-- 移动端配置 -->
+    <meta name="theme-color" content="#0078d4">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="微软语音合成">
+    
+    <!-- PWA 支持 -->
+    
+    <!-- DNS 预取 -->
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="container">
+        <h2>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" style="vertical-align: middle;">
+                <path fill="currentColor" d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11 11-4.925 11-11S18.075 1 12 1m0 20c-4.963 0-9-4.037-9-9s4.037-9 9-9 9 4.037 9 9-4.037 9-9 9m3.5-9c.828 0 1.5-.672 1.5-1.5S16.328 9 15.5 9 14 9.672 14 10.5s.672 1.5 1.5 1.5m-7 0c.828 0 1.5-.672 1.5-1.5S9.328 9 8.5 9 7 9.672 7 10.5 7.672 12 8.5 12m3.5 6.5c2.33 0 4.31-1.46 5.02-3.5H6.98c.71 2.04 2.69 3.5 5.02 3.5"/>
+            </svg>
+            微软语音合成
+        </h2>
+        
+        <!-- 主要内容区 -->
+        <div class="content-wrapper">
+            <!-- 左侧输入面板 -->
+            <div class="input-panel">
+                
+                <!-- 可展开/折叠的设置区域 -->
+                <div class="settings-section collapsed" id="settingsSection">
+                    <div class="settings-header">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="1"/>
+                                <circle cx="19" cy="12" r="1"/>
+                                <circle cx="5" cy="12" r="1"/>
+                                <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m5.08 5.08l4.24 4.24M1 12h6m6 0h6M4.22 19.78l4.24-4.24m5.08-5.08l4.24-4.24"/>
+                            </svg>
+                            API 配置
+                        </h3>
+                        <div class="settings-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="settings-content">
+                        <div class="input-group">
+                            <label for="apiKey">API 密钥</label>
+                            <input type="password" id="apiKey" placeholder="输入 Azure 语音服务 API 密钥" autocomplete="off">
+                            <button type="button" class="toggle-password" aria-label="显示/隐藏密钥">
+                                <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="eye-off-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="input-group">
+                            <label for="region">区域</label>
+                            <input type="text" id="region" placeholder="输入 Azure 服务区域（如 eastasia）">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 文本和语音输入 -->
+                <div class="input-group">
+                    <label for="text">文本内容</label>
+                    <textarea id="text" placeholder="输入要转换为语音的文本内容" spellcheck="false"></textarea>
+                </div>
+                
+                <div class="input-group">
+                    <label for="voiceName">选择音色</label>
+                    <select id="voiceName">
+                <optgroup label="🚀 Dragon HD Flash - 最新极速版 (推荐⭐)">
+                    <option value="zh-CN-Xiaoxiao:DragonHDFlashLatestNeural" selected>晓晓 - 智能女声【首选】</option>
+                    <option value="zh-CN-Xiaoxiao2:DragonHDFlashLatestNeural">晓晓2 - 情感女声</option>
+                    <option value="zh-CN-Xiaochen:DragonHDFlashLatestNeural">晓晨 - 标准女声</option>
+                    <option value="zh-CN-Xiaohan:DragonHDFlashLatestNeural">晓涵 - 温暖女声</option>
+                    <option value="zh-CN-Xiaoyi:DragonHDFlashLatestNeural">晓伊 - 温柔女声</option>
+                    <option value="zh-CN-Xiaoyou:DragonHDFlashLatestNeural">晓游 - 活泼女声</option>
+                    <option value="zh-CN-Xiaoyu:DragonHDFlashLatestNeural">晓语 - 甜美女声</option>
+                    <option value="zh-CN-Xiaoshuang:DragonHDFlashLatestNeural">晓爽 - 清晰女声</option>
+                    <option value="zh-CN-Yunxiao:DragonHDFlashLatestNeural">云晓 - 年轻男声</option>
+                    <option value="zh-CN-Yunyi:DragonHDFlashLatestNeural">云逸 - 成熟男声</option>
+                    <option value="zh-CN-Yunxia:DragonHDFlashLatestNeural">云霞 - 儒雅男声</option>
+                    <option value="zh-CN-Yunye:DragonHDFlashLatestNeural">云野 - 低沉男声</option>
+                </optgroup>
+                
+                <optgroup label="🎤 标准 Neural 女声 (经典稳定)">
+                    <option value="zh-CN-XiaoxiaoNeural">晓晓 - 温暖女声</option>
+                    <option value="zh-CN-XiaoyiNeural">晓伊 - 温柔女声</option>
+                    <option value="zh-CN-XiaochenNeural">晓辰 - 标准女声</option>
+                    <option value="zh-CN-XiaohanNeural">晓涵 - 活泼女声</option>
+                    <option value="zh-CN-XiaomengNeural">晓梦 - 甜美女声</option>
+                    <option value="zh-CN-XiaomoNeural">晓墨 - 清新女声</option>
+                    <option value="zh-CN-XiaoqiuNeural">晓秋 - 成熟女声</option>
+                    <option value="zh-CN-XiaoshuangNeural">晓双 - 可爱女声</option>
+                    <option value="zh-CN-XiaoxuanNeural">晓萱 - 知性女声</option>
+                    <option value="zh-CN-XiaoruiNeural">晓睿 - 干练女声</option>
+                </optgroup>
+                
+                <optgroup label="🎤 标准 Neural 男声 (经典稳定)">
+                    <option value="zh-CN-YunxiNeural">云希 - 年轻男声</option>
+                    <option value="zh-CN-YunyangNeural">云扬 - 成熟男声</option>
+                    <option value="zh-CN-YunfengNeural">云枫 - 儒雅男声</option>
+                    <option value="zh-CN-YunzeNeural">云泽 - 温和男声</option>
+                    <option value="zh-CN-YunjianNeural">云剑 - 铿锵男声</option>
+                    <option value="zh-CN-YunhaoNeural">云浩 - 浑厚男声</option>
+                </optgroup>
+                
+                <optgroup label="🌍 多语言版本 (支持多语言混合)">
+                    <option value="zh-CN-XiaoxiaoMultilingualNeural">晓晓 Multilingual</option>
+                    <option value="zh-CN-XiaoyuMultilingualNeural">晓宇 Multilingual</option>
+                    <option value="zh-CN-XiaochenMultilingualNeural">晓晨 Multilingual</option>
+                    <option value="zh-CN-XiaoshuangMultilingualNeural">晓爽 Multilingual</option>
+                    <option value="zh-CN-YunfanMultilingualNeural">云帆 Multilingual</option>
+                    <option value="zh-CN-YunxiaoMultilingualNeural">云晓 Multilingual</option>
+                    <option value="zh-CN-YunyiMultilingualNeural">云逸 Multilingual</option>
+                </optgroup>
+                
+                <optgroup label="🗣️ 区域方言版本 (地方口音)">
+                    <option value="zh-CN-liaoning-XiaobeiNeural">晓北 - 东北口音女声</option>
+                    <option value="zh-CN-liaoning-YunbiaoNeural">云飙 - 东北口音男声</option>
+                    <option value="zh-CN-shaanxi-XiaoniNeural">晓妮 - 陕西口音女声</option>
+                    <option value="zh-CN-sichuan-YunxiNeural">云玺 - 四川口音男声</option>
+                    <option value="zh-CN-shandong-YunxiangNeural">云翔 - 山东口音男声</option>
+                </optgroup>
+                
+                <optgroup label="🎭 其他方言与语言 (更多选择)">
+                    <option value="zh-HK-HiuMaanNeural">晓晓 - 粤语女声</option>
+                    <option value="zh-HK-WanLungNeural">云龙 - 粤语男声</option>
+                    <option value="zh-HK-HiuGaaiNeural">晓盖 - 粤语女声</option>
+                    <option value="zh-TW-HsiaoChenNeural">晓晨 - 台湾女声</option>
+                    <option value="zh-TW-YunJheNeural">云哲 - 台湾男声</option>
+                    <option value="zh-TW-HsiaoYuNeural">晓宇 - 台湾女声</option>
+                </optgroup>
+            </select>
+                </div>
+                
+                <!-- 按钮区域 -->
+                <div class="button-group">
+                    <button id="synthesizeButton" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        生成音频
+                    </button>
+                    <button id="downloadButton" class="btn btn-success" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        保存音频
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 音频播放区 -->
+            <div class="audio-panel">
+                <div id="progressIndicator" class="progress-section" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-bar-value"></div>
+                    </div>
+                    <div class="progress-text">正在生成音频...</div>
+                </div>
+                
+                <div id="audioPlayerContainer" style="display: none;">
+                    <div class="audio-header">
+                        <h3>音频播放</h3>
+                    </div>
+                    <audio id="audioPlayer" controls></audio>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const settingsSection = document.getElementById('settingsSection');
+            const settingsHeader = settingsSection.querySelector('.settings-header');
+            
+            // 设置区域展开/折叠
+            settingsHeader.addEventListener('click', () => {
+                settingsSection.classList.toggle('expanded');
+                settingsSection.classList.toggle('collapsed');
+            });
+            
+            // 确保默认为折叠状态
+            settingsSection.classList.add('collapsed');
+            settingsSection.classList.remove('expanded');
+        });
+    </script>
+</body>
+</html>
