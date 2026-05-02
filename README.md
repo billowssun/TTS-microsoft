@@ -1,35 +1,47 @@
 # 微软语音合成 (Azure TTS)
 
-基于微软 Azure 认知服务 Speech SDK 的浏览器端文本转语音工具，支持 35+ 种中文音色。
+基于 Azure AI Speech 的文本转语音工具，前端负责输入和播放，服务端 API 负责调用 Azure TTS，避免把订阅密钥暴露到浏览器。
 
 ## 功能
 
-- 文本转语音合成（Azure Neural TTS / Dragon HD Flash）
-- 丰富的音色选择（Dragon HD Flash、标准 Neural、多语言、方言等）
-- 音频在线播放与 WAV 下载
-- API 密钥本地持久化 / CI 环境变量注入
+- 文本转语音合成，支持 Azure Neural TTS / Dragon HD / Flash 音色
+- 63 种中文、方言、粤语、吴语、台式国语等音色
+- 在线预览与 WAV 下载
+- Azure 订阅密钥只保存在服务端环境变量中
 
 ## 部署到 Vercel
 
-1. Fork 本仓库
-2. 在 Vercel 中导入项目，自动识别 `vercel.json` 配置
-3. 在 Vercel 项目 **Settings → Environment Variables** 中添加：
-   - `SPEECH_KEY` = Azure 语音服务 API 密钥
-   - `SPEECH_REGION` = `southeastasia`（推荐，支持 Dragon HD Flash + 预览版音色）
-4. 部署后用户无需填写密钥，打开即用
+1. Fork 或导入本项目。
+2. 在 Vercel 项目 Settings -> Environment Variables 中添加：
+   - `SPEECH_KEY`：Azure 语音服务 API 密钥
+   - `SPEECH_REGION`：Azure 区域，例如 `southeastasia`
+3. 部署后打开页面即可使用。
+
+`vercel.json` 会执行 `npm run build`，静态文件输出到 `dist`，`api/tts.js` 作为服务端函数处理语音合成请求。
 
 ## 本地使用
 
-直接打开 `index.html`，展开 API 配置手动填入密钥和区域。密钥会自动保存到浏览器 localStorage。
+需要 Node.js 18 或更高版本。
+
+```powershell
+$env:SPEECH_KEY="你的 Azure Speech Key"
+$env:SPEECH_REGION="southeastasia"
+npm start
+```
+
+然后访问 `http://localhost:3000`。
+
+直接双击打开 `index.html` 无法调用 `/api/tts`，因此不会完成语音合成。
 
 ## Azure 服务配置建议
 
 | 项目 | 推荐值 |
 |------|--------|
 | 区域 | `southeastasia` |
-| 定价层 | Free F0（每月 50 万字符免费） |
+| 定价层 | Free F0 或按实际用量选择 |
 
 ## 技术栈
 
 - 原生 HTML / CSS / JavaScript
-- [Microsoft Cognitive Services Speech SDK](https://learn.microsoft.com/zh-cn/azure/ai-services/speech-service/)
+- Node.js 服务端 API
+- Azure AI Speech TTS REST API

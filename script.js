@@ -1,7 +1,4 @@
 (function() {
-    var INJECTED_KEY = '__SPEECH_KEY__';
-    var INJECTED_REGION = '__SPEECH_REGION__';
-
     var VOICES = [
         { g: 'Dragon HD Omni · 最新旗舰 (自然流畅)', v: [
             ['zh-CN-Yunqi:DragonHDOmniLatestNeural', '云奇 · 自然男声'],
@@ -82,19 +79,7 @@
         ]}
     ];
 
-    function isPlaceholder(val) {
-        return !val || val.indexOf('__SPEECH_') === 0;
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
-        // 加载 SDK
-        var sdkScript = document.createElement('script');
-        sdkScript.src = 'https://cdn.jsdelivr.net/npm/microsoft-cognitiveservices-speech-sdk@latest/distrib/browser/microsoft.cognitiveservices.speech.sdk.bundle-min.js';
-        sdkScript.onerror = function() {
-            alert('Speech SDK 加载失败，请检查网络后刷新页面');
-        };
-        document.head.appendChild(sdkScript);
-
         // 构建音色下拉
         var voiceSelect = document.getElementById('voiceName');
         var frag = document.createDocumentFragment();
@@ -123,6 +108,7 @@
         var charCount = document.getElementById('charCount');
 
         var audioData = null;
+        var audioUrl = null;
 
         // 启用按钮
         synthesizeBtn.disabled = false;
@@ -136,11 +122,6 @@
 
         // 合成
         synthesizeBtn.addEventListener('click', function() {
-            if (!window.SpeechSDK) {
-                alert('Speech SDK 尚未就绪，请稍后');
-                return;
-            }
-
             var text = textInput.value.trim();
             if (!text) {
                 alert('请输入文本内容');
@@ -151,15 +132,14 @@
                 return;
             }
 
-            if (isPlaceholder(INJECTED_KEY) || isPlaceholder(INJECTED_REGION)) {
-                alert('未配置 API 密钥。请通过 Vercel 环境变量 SPEECH_KEY / SPEECH_REGION 部署。');
-                return;
-            }
-
             // 停止当前播放
             if (!audioPlayer.paused) {
                 audioPlayer.pause();
                 audioPlayer.currentTime = 0;
+            }
+            if (audioUrl) {
+                URL.revokeObjectURL(audioUrl);
+                audioUrl = null;
             }
 
             // 加载态
@@ -168,36 +148,48 @@
             btnSpinner.style.display = 'block';
             outputCard.style.display = 'none';
 
-            var speechConfig = SpeechSDK.SpeechConfig.fromSubscription(INJECTED_KEY, INJECTED_REGION);
-            speechConfig.speechSynthesisVoiceName = voiceSelect.value;
+            fetch('/api/tts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: text,
+                    voice: voiceSelect.value
+                })
+            })
+                .then(function(response) {
+                    if (response.ok) {
+                        return response.arrayBuffer();
+                    }
 
-            var synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig, null);
-
-            synthesizer.speakTextAsync(
-                text,
-                function(result) {
-                    synthesizer.close();
-
-                    audioData = result.audioData;
+                    return response.json()
+                        .catch(function() {
+                            return { error: '语音合成失败，HTTP ' + response.status };
+                        })
+                        .then(function(payload) {
+                            throw new Error(payload.error || '语音合成失败');
+                        });
+                })
+                .then(function(buffer) {
+                    audioData = buffer;
                     var blob = new Blob([audioData], { type: 'audio/wav' });
-                    var url = URL.createObjectURL(blob);
+                    audioUrl = URL.createObjectURL(blob);
 
-                    audioPlayer.src = url;
+                    audioPlayer.src = audioUrl;
                     outputCard.style.display = 'block';
 
                     synthesizeBtn.disabled = false;
                     btnText.textContent = '生成音频';
                     btnSpinner.style.display = 'none';
-                },
-                function(error) {
-                    synthesizer.close();
+                })
+                .catch(function(error) {
                     console.error('合成失败:', error);
                     alert('语音合成失败: ' + (error.message || error));
                     synthesizeBtn.disabled = false;
                     btnText.textContent = '生成音频';
                     btnSpinner.style.display = 'none';
-                }
-            );
+                });
         });
 
         // 下载
